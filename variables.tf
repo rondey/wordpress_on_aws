@@ -1,6 +1,6 @@
 variable "wp_version" {
   type        = string
-  default     = ""
+  default     = "latest"
   description = "Wordpress version to use"
 }
 
@@ -29,3 +29,12 @@ variable "db_cpu_type" {
   default = "db.t3.micro"
 }
 
+variable "wp_cpu_type" {
+  type    = string
+  default = "t2.micro"
+}
+
+variable "arn_acm_certificate" {
+  type    = string
+  default = ""
+}
