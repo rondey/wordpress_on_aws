@@ -66,24 +66,32 @@ resource "aws_launch_template" "wp_launch" {
   }
 
   user_data = base64encode(templatefile("ec2.tpl", {
-    address = aws_db_instance.wp_db.address
-    db_username = var.db_username
-    db_password = var.db_password
-    db_name = var.db_name
+    address          = aws_db_instance.wp_db.address
+    db_username      = var.db_username
+    db_password      = var.db_password
+    db_name          = var.db_name
     wp_efs_access_id = aws_efs_access_point.wp_efs_access.id
-    wp_efs_id = aws_efs_file_system.wp_efs.id
-    wp_version = var.wp_version
+    wp_efs_id        = aws_efs_file_system.wp_efs.id
+    wp_version       = var.wp_version
+    wp_site_user     = var.site_user
+    wp_site_password = var.site_password
+    wp_site_email    = var.site_email
+    wp_site_name     = var.site_name
+    wp_site_surname  = var.site_surname
+    wp_site_blog     = var.site_blog
   }))
 }
 
 resource "aws_autoscaling_group" "wp_asg" {
-  name                    = "wp_asg"
-  vpc_zone_identifier     = [aws_subnet.wordpress_a.id, aws_subnet.wordpress_b.id, aws_subnet.wordpress_c.id]
-  desired_capacity        = 1
-  max_size                = 10
-  min_size                = 1
-  default_cooldown        = 300
-  default_instance_warmup = 300
+  name                      = "wp_asg"
+  vpc_zone_identifier       = [aws_subnet.wordpress_a.id, aws_subnet.wordpress_b.id, aws_subnet.wordpress_c.id]
+  desired_capacity          = 1
+  min_size                  = var.min_instances_size
+  max_size                  = var.max_instances_size
+  default_cooldown          = 300
+  default_instance_warmup   = 300
+  health_check_type         = "ELB"
+  health_check_grace_period = 300
 
   launch_template {
     id      = aws_launch_template.wp_launch.id
@@ -99,7 +107,7 @@ resource "aws_autoscaling_group" "wp_asg" {
 
 resource "aws_autoscaling_attachment" "wp_asg_attachment" {
   autoscaling_group_name = aws_autoscaling_group.wp_asg.id
-  lb_target_group_arn   = aws_lb_target_group.wp_target.arn
+  lb_target_group_arn    = aws_lb_target_group.wp_target.arn
 }
 
 resource "aws_autoscaling_policy" "wp_asg_policy" {
@@ -115,19 +123,3 @@ resource "aws_autoscaling_policy" "wp_asg_policy" {
     target_value = 70.0
   }
 }
-
-
-# #!/bin/bash
-# sudo yum update -y
-# sudo yum install -y amazon-efs-utils
-# sudo yum install -y nfs-utils
-# sudo yum install -y docker
-# sudo usermod -a -G docker ec2-user
-# newgrp docker
-# sudo systemctl start docker.service
-# sudo yum install -y mysql
-# mysql -h terraform-20230305164934403700000001.cnal8zvnxair.eu-west-3.rds.amazonaws.com -u admin -pSNgBNrPvrCaGvcPB37g4 -e "create database IF NOT EXISTS wordpress"
-# mkdir efs
-# sudo mount -t efs -o tls,accesspoint=fsap-0f8510db4039458a9 fs-01f87253b5cf79375 efs
-# sudo chmod 777 /efs
-# docker run -p 80:80   --env WORDPRESS_DB_HOST=terraform-20230305164934403700000001.cnal8zvnxair.eu-west-3.rds.amazonaws.com --env WORDPRESS_DB_PASSWORD=SNgBNrPvrCaGvcPB37g4  --env WORDPRESS_DB_USER=admin   --volume /efs:/var/www/html --user 33:33   wordpress:latest
