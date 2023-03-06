@@ -24,7 +24,7 @@ variable "db_username" {
 
 variable "db_password" {
   type    = string
-  default = "SNgBNrPvrCaGvcPB37g4"
+  #default = "SNgBNrPvrCaGvcPB37g4"
   description = "Password of the database"
 }
 

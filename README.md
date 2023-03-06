@@ -14,7 +14,7 @@
 
 1. Assicurarsi di modificare il file *providers.tf* fornendo le opportune *shared_credentials_files* e *profile*
 2. `terraform init`
-3. `terraform apply` per lanciare il sistema con i valori di default presenti in *variables.tf*. Se invece si vogliono definire le variabili, è possibile aggiungere un file *variables.tfvars* dove definire i valori diversi da quelli di default, ad esempio *wp_version* per stabilire la versione di Wordpress contenuto nelle istanze, e lanciare `terraform apply -var-file="variables.tfvars"`
+3. `terraform apply` per lanciare il sistema con i valori di default presenti in *variables.tf* eccetto che per la password del database che dovrà essere inserita manualmente. Se invece si vogliono definire le variabili, è possibile aggiungere un file *variables.tfvars* dove definire i valori diversi da quelli di default, ad esempio *wp_version* per stabilire la versione di Wordpress contenuto nelle istanze, e lanciare `terraform apply -var-file="variables.tfvars"`
 4. Al termine della creazione, verrà restituito l'indirizzo al quale connettersi per vedere il sito. Aprire il browser all'indirizzo presente in *wp_loadbalancer_address*.
 5. `terraform destroy` per distruggere le macchine.
 
