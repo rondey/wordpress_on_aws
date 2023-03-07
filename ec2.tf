@@ -5,6 +5,11 @@ resource "aws_lb_target_group" "wp_target" {
   stickiness {
     type = "lb_cookie"
   }
+  health_check {
+    healthy_threshold = 5
+    unhealthy_threshold = 2
+    interval = 210
+  }
   vpc_id = aws_vpc.wp_vpc.id
 }
 
@@ -88,10 +93,10 @@ resource "aws_autoscaling_group" "wp_asg" {
   desired_capacity          = 1
   min_size                  = var.min_instances_size
   max_size                  = var.max_instances_size
-  default_cooldown          = 300
-  default_instance_warmup   = 300
+  default_cooldown          = 420
+  default_instance_warmup   = 420
   health_check_type         = "ELB"
-  health_check_grace_period = 300
+  health_check_grace_period = 420
 
   launch_template {
     id      = aws_launch_template.wp_launch.id
